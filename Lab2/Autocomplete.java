@@ -30,10 +30,10 @@ public class Autocomplete {
             return;
         }
 
-        /*if (dictionary.length < 80){
-            insertionSort(dictionary, spanL, spanH-1);
+        if (dictionary.length < 80){
+            insertionSort(comp, spanL, spanH);
             return;
-        }*/
+        }
 
         //find index of median of three. This is the pivot
         int spanM = (spanL + spanH)/2;
@@ -129,18 +129,20 @@ public class Autocomplete {
     }
 
 
-	public void insertionSort(Term[] a, int low, int high) {
-		Comparator<Term> comp = Term.byLexicographicOrder();
+	public void insertionSort(Comparator<Term> comp, int low, int high) {
+        //loop through the unsorted elements
 		for (int i = low + 1; i <= high; i++) {
-			Term val = a[i];
-			int j = i;
-			while (j > low && comp.compare(a[j - 1], val) == 1){
-                a[j] = a
-                [j - 1];
+            //val is the element we are to put into "the hand"
+			Term val = dictionary[i];
+            int j = i;
+            //as long as the element we are to insert is smaller than the element we are looking at, 
+            // we keep shuffling these elements to the right in the hand
+ 			while (j > low && comp.compare(dictionary[j - 1], val) > 0){
+                dictionary[j] = dictionary[j - 1];
 				j--;
-			}
-            a[j] = val;
-      
+            }
+            //when we quit the loop, j is the index where we should put val
+            dictionary[j] = val;
 		}
     }
 
