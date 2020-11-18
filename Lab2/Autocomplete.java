@@ -15,7 +15,7 @@ public class Autocomplete {
         Comparator<Term> comp = Term.byLexicographicOrder();
         int spanL = 0;
         int spanH = dictionary.length;
-        quickSort(comp, spanL, spanH-1);
+        quickSort(dictionary, comp, spanL, spanH-1);
     }
 
     /**
@@ -24,23 +24,23 @@ public class Autocomplete {
      * @param spanL index of the lowest element to sort
      * @param spanH index of the highest element to sort
      */
-    private void quickSort(Comparator<Term> comp, int spanL, int spanH){
+    private void quickSort(Term[] toSort, Comparator<Term> comp, int spanL, int spanH){
 
         if(spanH <= spanL){
             return;
         }
 
-        if (dictionary.length < 80){
-            insertionSort(comp, spanL, spanH);
+        if (toSort.length < 80){
+            insertionSort(toSort, comp, spanL, spanH);
             return;
         }
 
         //find index of median of three. This is the pivot
         int spanM = (spanL + spanH)/2;
-        int pivot = medianOfThree(dictionary, spanL, spanM, spanH);
+        int pivot = medianOfThree(toSort, spanL, spanM, spanH);
 
         if(pivot != spanL){
-            swap(pivot, spanL);
+            swap(toSort, pivot, spanL);
             pivot = spanL;
         }
 
@@ -51,12 +51,12 @@ public class Autocomplete {
         //as long as 
         while (highI >= lowI){
             //as long as the pivot is bigger than what lowI is pointing at
-            while(comp.compare(dictionary[pivot], dictionary[lowI]) >= 0
+            while(comp.compare(toSort[pivot], toSort[lowI]) >= 0
                 &&highI >= lowI){
                 lowI++;
             }
             //as long as the pivot is smaller than what highI is pointing at
-            while(comp.compare(dictionary[pivot], dictionary[highI]) <= 0
+            while(comp.compare(toSort[pivot], toSort[highI]) <= 0
                 &&highI >= lowI){
                 highI--;
             }
@@ -65,20 +65,20 @@ public class Autocomplete {
             }
             //swap the element that is large among small element 
             //with the too small among large elements
-            swap(lowI, highI);
+            swap(toSort, lowI, highI);
 
         }
         //
-        swap(pivot, highI);
+        swap(toSort, pivot, highI);
         pivot = highI;
 
 
 
-        quickSort(comp, spanL, pivot-1); //Sorts left side
+        quickSort(toSort, comp, spanL, pivot-1); //Sorts left side
         if(pivot > spanH){ //?
             pivot = spanH;
         }
-        quickSort(comp, pivot+1, spanH); //Sorts right side
+        quickSort(toSort, comp, pivot+1, spanH); //Sorts right side
 
 
     }
@@ -107,18 +107,35 @@ public class Autocomplete {
         }
     }
 
-    private void swap(int i1, int i2){
-        Term temp = dictionary[i1];
-        dictionary[i1] = dictionary[i2];
-        dictionary[i2] = temp;  
+    private void swap(Term[] array, int i1, int i2){
+        Term temp = array[i1];
+        array[i1] = array[i2];
+        array[i2] = temp;  
     }
 
 
     // Returns all terms that start with the given prefix, in descending order of weight.
     // Complexity: O(log N + M log M), where M is the number of matching terms
     public Term[] allMatches(String prefix) {
-        /* TODO */
-        return null;
+        //sort by prefix order
+        quickSort(dictionary, Term.byPrefixOrder(prefix.length()), 0, dictionary.length-1); //idk
+
+        //below is dumb af on many levels
+        //find lower and upper bounds of the matches
+        int low = RangeBinarySearch.firstIndexOf(dictionary, new Term(prefix, 0), Term.byPrefixOrder(prefix.length()));
+        int high = RangeBinarySearch.lastIndexOf(dictionary, new Term(prefix, 0), Term.byPrefixOrder(prefix.length()));
+
+        //make a new array and copy matches to this
+        Term[] matches = new Term[high-low+1];
+        for (int i = 0; i < matches.length; i++) {
+            matches[i] = dictionary[low + i];
+        }
+
+        //sort in descending order of weight
+        quickSort(matches, Term.byReverseWeightOrder(), 0, matches.length-1);
+
+        //return the matches
+        return matches;
     }
 
     // Returns the number of terms that start with the given prefix.
@@ -129,20 +146,20 @@ public class Autocomplete {
     }
 
 
-	public void insertionSort(Comparator<Term> comp, int low, int high) {
+	public void insertionSort(Term[] toSort, Comparator<Term> comp, int low, int high) {
         //loop through the unsorted elements
 		for (int i = low + 1; i <= high; i++) {
             //val is the element we are to put into "the hand"
-			Term val = dictionary[i];
+			Term val = toSort[i];
             int j = i;
             //as long as the element we are to insert is smaller than the element we are looking at, 
             // we keep shuffling these elements to the right in the hand
- 			while (j > low && comp.compare(dictionary[j - 1], val) > 0){
-                dictionary[j] = dictionary[j - 1];
+ 			while (j > low && comp.compare(toSort[j - 1], val) > 0){
+                toSort[j] = toSort[j - 1];
 				j--;
             }
             //when we quit the loop, j is the index where we should put val
-            dictionary[j] = val;
+            toSort[j] = val;
 		}
     }
 
