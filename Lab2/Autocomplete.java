@@ -30,7 +30,7 @@ public class Autocomplete {
             return;
         }
 
-        if (toSort.length < 80){
+        if (spanH - spanL < 10){
             insertionSort(toSort, comp, spanL, spanH);
             return;
         }
@@ -50,19 +50,44 @@ public class Autocomplete {
 
         //as long as 
         while (highI >= lowI){
+/*
+            if(highI >= spanH){
+                highI =spanH;
+            }
+
+            if( pivot >= toSort.length-1){
+                pivot =dictionary.length-1;
+            }
+            if( lowI >= (dictionary.length-1)){
+                lowI =dictionary.length-1;
+             }
+*/
             //as long as the pivot is bigger than what lowI is pointing at
             while(comp.compare(toSort[pivot], toSort[lowI]) >= 0
                 &&highI >= lowI){
                 lowI++;
+                if (lowI > spanH){
+                    break;
+                }
             }
             //as long as the pivot is smaller than what highI is pointing at
             while(comp.compare(toSort[pivot], toSort[highI]) <= 0
                 &&highI >= lowI){
                 highI--;
+                if (lowI < spanL){
+                    break;
+                }
             }
-            if(highI < lowI){
+
+
+            if(highI < lowI
+            //|| highI >= spanH
+            //|| pivot >= spanH
+            //|| lowI >= spanH
+            ){
                 break;
             }
+            
             //swap the element that is large among small element 
             //with the too small among large elements
             swap(toSort, lowI, highI);
@@ -72,12 +97,28 @@ public class Autocomplete {
         swap(toSort, pivot, highI);
         pivot = highI;
 
+        /*
+        if(highI >= spanH){
+            highI =spanH;
+        }
 
+        if( pivot >= spanH){
+           pivot =spanH;
+        }
+        if( lowI >= spanH){
+            lowI =spanH;
+         }
+*/
 
-        quickSort(toSort, comp, spanL, pivot-1); //Sorts left side
         if(pivot > spanH){ //?
             pivot = spanH;
         }
+
+        if(pivot < spanL){
+            pivot = spanL;
+        }
+        quickSort(toSort, comp, spanL, pivot-1); //Sorts left side
+
         quickSort(toSort, comp, pivot+1, spanH); //Sorts right side
 
 
@@ -125,6 +166,9 @@ public class Autocomplete {
         int low = RangeBinarySearch.firstIndexOf(dictionary, new Term(prefix, 0), Term.byPrefixOrder(prefix.length()));
         int high = RangeBinarySearch.lastIndexOf(dictionary, new Term(prefix, 0), Term.byPrefixOrder(prefix.length()));
 
+        if(high == -1 || low == -1){
+            return new Term[0];
+        }
         //make a new array and copy matches to this
         Term[] matches = new Term[high-low+1];
         for (int i = 0; i < matches.length; i++) {
@@ -141,8 +185,29 @@ public class Autocomplete {
     // Returns the number of terms that start with the given prefix.
     // Complexity: O(log N)
     public int numberOfMatches(String prefix) {
-        /* TODO */
-        return 0;
+        //return allMatches(prefix).length;
+        
+        //sort by prefix order
+        quickSort(dictionary, Term.byPrefixOrder(prefix.length()), 0, dictionary.length-1); //idk
+        //quickSort(dictionary, Term.byLexicographicOrder(), 0, dictionary.length-1);
+
+        /*for (Term term : dictionary) {
+            System.out.println(term.toString());
+        }*/
+
+        //below is dumb af on many levels
+        //find lower and upper bounds of the matches
+        int low = RangeBinarySearch.firstIndexOf(dictionary.clone(), new Term(prefix, 110), Term.byPrefixOrder(prefix.length()));
+        int high = RangeBinarySearch.lastIndexOf(dictionary.clone(), new Term(prefix, 110), Term.byPrefixOrder(prefix.length()));
+
+
+        if(high == -1 || low == -1){
+            return 0;
+        }
+
+        //make a new array and copy matches to this
+        return high-low+1;
+        
     }
 
 

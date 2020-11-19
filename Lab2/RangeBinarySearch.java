@@ -14,7 +14,7 @@ public class RangeBinarySearch {
         //next index we want to check
         int nextI = terms.length/2;
         //we want to search as long as 
-        while(top - bot > 0){
+        while(top - bot >= 0){
             //update nextI
             nextI = (top + bot)/2;
 
@@ -34,7 +34,7 @@ public class RangeBinarySearch {
             }
 
             //update top and bot
-            if (comparator.compare(key, terms[nextI]) == -1){
+            if (comparator.compare(key, terms[nextI]) < 0){
                 top = nextI;
             } else {
                 bot = nextI+1;
@@ -53,6 +53,8 @@ public class RangeBinarySearch {
         int nextI = terms.length/2;
         while(top - bot > 0){
             nextI = (top + bot)/2;
+            
+            //System.out.println("HEy look ma we made it");
 
             if (comparator.compare(key, terms[nextI]) == 0){
                 //if that's the case, continue the check on nextI+1 until nextI == terms.length 
@@ -68,7 +70,7 @@ public class RangeBinarySearch {
                 }
             }
 
-            if (comparator.compare(key, terms[nextI]) == -1){
+            if (comparator.compare(key, terms[nextI]) < 0){
                 top = nextI;
             } else {
                 bot = nextI+1;

@@ -52,9 +52,17 @@ public class Term {
     // but using only the first k characters of each word.
     public static Comparator<Term> byPrefixOrder(int k) {
 
-        Comparator<Term> comp = (one, other) -> 
-            one.word.substring(0, k).compareToIgnoreCase(other.word.substring(0, k));
+        Comparator<Term> comp = (one, other) -> {
+            int nK = k;
+            if (k > one.word.length()){
+                nK = one.word.length();
+            }
+            if (nK > other.word.length()){
+                nK = other.word.length();
+            }
+            return one.word.substring(0, nK).compareToIgnoreCase(other.word.substring(0, nK));
         
+        };
         return comp;
 
     }
