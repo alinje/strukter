@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class Autocomplete {
@@ -26,11 +27,14 @@ public class Autocomplete {
      */
     private void quickSort(Term[] toSort, Comparator<Term> comp, int spanL, int spanH){
 
+        //Arrays.sort(toSort, comp);
+        //return;
+    
         if(spanH <= spanL){
             return;
         }
 
-        if (spanH - spanL < 10){
+        if (spanH - spanL < 80){
             insertionSort(toSort, comp, spanL, spanH);
             return;
         }
@@ -159,24 +163,27 @@ public class Autocomplete {
     // Complexity: O(log N + M log M), where M is the number of matching terms
     public Term[] allMatches(String prefix) {
         //sort by prefix order
-        quickSort(dictionary, Term.byPrefixOrder(prefix.length()), 0, dictionary.length-1); //idk
+        //quickSort(dictionary, Term.byPrefixOrder(prefix.length()), 0, dictionary.length-1);
 
         //below is dumb af on many levels
         //find lower and upper bounds of the matches
-        int low = RangeBinarySearch.firstIndexOf(dictionary, new Term(prefix, 0), Term.byPrefixOrder(prefix.length()));
-        int high = RangeBinarySearch.lastIndexOf(dictionary, new Term(prefix, 0), Term.byPrefixOrder(prefix.length()));
+        Term term = new Term(prefix, 0);
+        int low = RangeBinarySearch.firstIndexOf(dictionary, term, Term.byPrefixOrder(prefix.length())); //log N
+        int high = RangeBinarySearch.lastIndexOf(dictionary, term, Term.byPrefixOrder(prefix.length())); //log N
 
+        //if no matches were found, return an empty array
         if(high == -1 || low == -1){
             return new Term[0];
         }
+        
         //make a new array and copy matches to this
         Term[] matches = new Term[high-low+1];
-        for (int i = 0; i < matches.length; i++) {
-            matches[i] = dictionary[low + i];
+        for (int i = 0; i < matches.length; i++) { 
+            matches[i] = dictionary[low + i];      
         }
 
         //sort in descending order of weight
-        quickSort(matches, Term.byReverseWeightOrder(), 0, matches.length-1);
+        quickSort(matches, Term.byReverseWeightOrder(), 0, matches.length-1); //M log M
 
         //return the matches
         return matches;
@@ -185,27 +192,17 @@ public class Autocomplete {
     // Returns the number of terms that start with the given prefix.
     // Complexity: O(log N)
     public int numberOfMatches(String prefix) {
-        //return allMatches(prefix).length;
-        
-        //sort by prefix order
-        quickSort(dictionary, Term.byPrefixOrder(prefix.length()), 0, dictionary.length-1); //idk
-        //quickSort(dictionary, Term.byLexicographicOrder(), 0, dictionary.length-1);
-
-        /*for (Term term : dictionary) {
-            System.out.println(term.toString());
-        }*/
-
-        //below is dumb af on many levels
         //find lower and upper bounds of the matches
-        int low = RangeBinarySearch.firstIndexOf(dictionary.clone(), new Term(prefix, 110), Term.byPrefixOrder(prefix.length()));
-        int high = RangeBinarySearch.lastIndexOf(dictionary.clone(), new Term(prefix, 110), Term.byPrefixOrder(prefix.length()));
+        Term term = new Term(prefix, 0);
+        int low = RangeBinarySearch.firstIndexOf(dictionary, term, Term.byPrefixOrder(prefix.length()));
+        int high = RangeBinarySearch.lastIndexOf(dictionary, term, Term.byPrefixOrder(prefix.length()));
 
-
+        //if no match was found, return -1
         if(high == -1 || low == -1){
             return 0;
         }
 
-        //make a new array and copy matches to this
+        //return the amount of matches
         return high-low+1;
         
     }

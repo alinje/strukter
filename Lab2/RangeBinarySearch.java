@@ -14,7 +14,7 @@ public class RangeBinarySearch {
         //next index we want to check
         int nextI = terms.length/2;
         //we want to search as long as 
-        while(top - bot >= 0){
+        while(top - bot >= 1){
             //update nextI
             nextI = (top + bot)/2;
 
@@ -27,13 +27,16 @@ public class RangeBinarySearch {
                         return 0;
                     }
                     nextI -= 1;
-                    if(comparator.compare(key, terms[nextI]) != 0){
+                    if(comparator.compare(key, terms[nextI]) != 0){    // [1 5 7 8]
                         return nextI +1;
                     }
                 }
             }
 
             //update top and bot
+            if (top-bot == 1 && comparator.compare(key, terms[nextI +1]) == 0){
+                return nextI +1;
+            }
             if (comparator.compare(key, terms[nextI]) < 0){
                 top = nextI;
             } else {
@@ -47,14 +50,11 @@ public class RangeBinarySearch {
     // according to the given comparator, or -1 if there are no matching elements.
     // Complexity: O(log N)
     public static int lastIndexOf(Term[] terms, Term key, Comparator<Term> comparator) {
-        //TODO kanske undvika kodduplicering?
         int bot = 0;
         int top = terms.length - 1;
         int nextI = terms.length/2;
         while(top - bot > 0){
             nextI = (top + bot)/2;
-            
-            //System.out.println("HEy look ma we made it");
 
             if (comparator.compare(key, terms[nextI]) == 0){
                 //if that's the case, continue the check on nextI+1 until nextI == terms.length 
@@ -70,6 +70,9 @@ public class RangeBinarySearch {
                 }
             }
 
+            if (top-bot == 1 && comparator.compare(key, terms[nextI +1]) == 0){
+                return nextI +1;
+            }
             if (comparator.compare(key, terms[nextI]) < 0){
                 top = nextI;
             } else {
