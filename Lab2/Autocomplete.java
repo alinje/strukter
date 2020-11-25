@@ -54,18 +54,7 @@ public class Autocomplete {
 
         //as long as 
         while (highI >= lowI){
-/*
-            if(highI >= spanH){
-                highI =spanH;
-            }
 
-            if( pivot >= toSort.length-1){
-                pivot =dictionary.length-1;
-            }
-            if( lowI >= (dictionary.length-1)){
-                lowI =dictionary.length-1;
-             }
-*/
             //as long as the pivot is bigger than what lowI is pointing at
             while(comp.compare(toSort[pivot], toSort[lowI]) >= 0
                 &&highI >= lowI){
@@ -85,9 +74,7 @@ public class Autocomplete {
 
 
             if(highI < lowI
-            //|| highI >= spanH
-            //|| pivot >= spanH
-            //|| lowI >= spanH
+
             ){
                 break;
             }
@@ -101,18 +88,6 @@ public class Autocomplete {
         swap(toSort, pivot, highI);
         pivot = highI;
 
-        /*
-        if(highI >= spanH){
-            highI =spanH;
-        }
-
-        if( pivot >= spanH){
-           pivot =spanH;
-        }
-        if( lowI >= spanH){
-            lowI =spanH;
-         }
-*/
 
         if(pivot > spanH){ //?
             pivot = spanH;
