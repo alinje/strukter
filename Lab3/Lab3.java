@@ -79,9 +79,28 @@ public class Lab3 {
     }
 
     // Phase 2: build index of n-grams (not implemented yet)
-    static BST<Ngram, ArrayList<Path>> buildIndex(BST<Path, Ngram[]> files) {
+    static BST<Ngram, ArrayList<Path>> buildIndex(BST<Path, Ngram[]> files) {                                // D * K * log N = N log N
         BST<Ngram, ArrayList<Path>> index = new BST<>();
         // TO DO: build index of n-grams
+
+        while (files.keys().hasNext()){         //håller på tills den gått igenom hela files                    D
+            Path p = files.keys().next();       //tar ut en key
+            for(Ngram[] nGram: files.get(p)){   //loopar igenom alla values inom den key:n                      K
+                
+                ArrayList<Path> l = null;       // list to add path to
+                if (!index.contains(nGram)){    // if nGram is not already in index make a new list             log 1, log 2, .... log N
+                    l = new ArrayList<>();      
+
+                } else {                        // else get the existing list                                   log 1, log 2, .... log N
+                    l = index.get(nGram);
+                }
+                l.add(p);                       // add the new path to the list                                 1, 2, .... N
+                index.put(nGram, p);            // put the list of paths in the index under the nGram           log 1, log 2, .... log N
+
+                
+            }
+
+        }
         return index;
     }
 
@@ -90,22 +109,44 @@ public class Lab3 {
         // TO DO: use index to make this loop much more efficient
         // N.B. Path is Java's class for representing filenames
         // PathPair represents a pair of Paths (see PathPair.java)
-        BST<PathPair, Integer> similarity = new BST<>();
-        for (Path path1: files.keys()) {
-            for (Path path2: files.keys()) {
-                if (path1.equals(path2)) continue;
-                for (Ngram ngram1: files.get(path1)) {
-                    for (Ngram ngram2: files.get(path2)) {
-                        if (ngram1.equals(ngram2)) {
-                            PathPair pair = new PathPair(path1, path2);
+        // D*D*K*K*(4) = N^2*5 N smallset = 20,000 m = 200,000, h = 4,000,000 N^2 = 400,000,000 ; 40,000,000,000; 
+        BST<PathPair, Integer> similarity = new BST<>();                            //1?
+        /*
+        for (Path path1: files.keys()) {                                            // D
+            for (Path path2: files.keys()) {                                        // D
+                if (path1.equals(path2)) continue;                                  // 1?
+                for (Ngram ngram1: files.get(path1)) {                              // K
+                    for (Ngram ngram2: files.get(path2)) {                          // K
+                        if (ngram1.equals(ngram2)) {                                // 1?
+                            PathPair pair = new PathPair(path1, path2);             // 1?
 
-                            if (!similarity.contains(pair))
-                                similarity.put(pair, 0);
+                            if (!similarity.contains(pair))                         // 1?
+                                similarity.put(pair, 0);                            // 1?
 
-                            similarity.put(pair, similarity.get(pair)+1);
+                            similarity.put(pair, similarity.get(pair)+1);           // 1?
                         }
                     }
                 }
+            }
+        }
+        */
+
+        Iterable it = index.keys();
+        while (it.hasNext()){
+            Ngram nG = it.next();
+            ArrayList<Path> l = index.get(nG);
+            if (l.size() > 1){
+                
+
+                for (int i = 1; i < l.size(); l++){
+                    PathPair pair = new PathPair(l.get(i-1), l.get(i));         
+
+                    if (!similarity.contains(pair)){                     
+                        similarity.put(pair, 0);                          
+                    }
+                    similarity.put(pair, similarity.get(pair)+1);          
+                }
+
             }
         }
 
