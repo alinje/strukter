@@ -83,9 +83,10 @@ public class Lab3 {
         BST<Ngram, ArrayList<Path>> index = new BST<>();
         // TO DO: build index of n-grams
 
-        while (files.keys().hasNext()){         //håller på tills den gått igenom hela files                    D
-            Path p = files.keys().next();       //tar ut en key
-            for(Ngram[] nGram: files.get(p)){   //loopar igenom alla values inom den key:n                      K
+        Iterator it = files.keys().iterator();
+        while (it.hasNext()){         //håller på tills den gått igenom hela files                    D
+            Path p = (Path) it.next();       //tar ut en key
+            for(Ngram nGram : files.get(p)) { // loopar igenom alla values inom den key:n K
                 
                 ArrayList<Path> l = null;       // list to add path to
                 if (!index.contains(nGram)){    // if nGram is not already in index make a new list             log 1, log 2, .... log N
@@ -95,7 +96,7 @@ public class Lab3 {
                     l = index.get(nGram);
                 }
                 l.add(p);                       // add the new path to the list                                 1, 2, .... N
-                index.put(nGram, p);            // put the list of paths in the index under the nGram           log 1, log 2, .... log N
+                index.put(nGram, l);            // put the list of paths in the index under the nGram           log 1, log 2, .... log N
 
                 
             }
@@ -131,14 +132,14 @@ public class Lab3 {
         }
         */
 
-        Iterable it = index.keys();
+        Iterator it = index.keys().iterator();
         while (it.hasNext()){
-            Ngram nG = it.next();
+            Ngram nG = (Ngram)it.next();
             ArrayList<Path> l = index.get(nG);
             if (l.size() > 1){
                 
 
-                for (int i = 1; i < l.size(); l++){
+                for (int i = 1; i < l.size(); i++){
                     PathPair pair = new PathPair(l.get(i-1), l.get(i));         
 
                     if (!similarity.contains(pair)){                     
