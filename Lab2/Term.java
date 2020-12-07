@@ -23,8 +23,7 @@ public class Term {
 
     // Extracts a prefix from the word.
     public String getPrefix(int len) {
-        /* TODO */
-        return null;
+        return (len > word.length())? word: word.substring(0, len);
     }
 
     // Compares the two terms in case-insensitive lexicographic order.
@@ -52,19 +51,8 @@ public class Term {
     // but using only the first k characters of each word.
     public static Comparator<Term> byPrefixOrder(int k) {
 
-        Comparator<Term> comp = (one, other) -> {
-            int nK = k;
-            if (k > one.word.length()){
-                nK = one.word.length();
-            }
-            if (nK > other.word.length()){
-                nK = other.word.length();
-            }
-            return one.word.substring(0, nK).compareToIgnoreCase(other.word.substring(0, nK));
+        return (one, other) -> Math.round(Math.signum(one.getPrefix(k).compareToIgnoreCase(other.getPrefix(k))));
         
-        };
-        return comp;
-
     }
 
     // Returns a string representation of this t0erm in the following format:
