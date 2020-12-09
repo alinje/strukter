@@ -25,15 +25,15 @@ public class Lab3 {
             Stopwatch stopwatch2 = new Stopwatch();
 
             // Read all input files
-            BST<Path, Ngram[]> files = readPaths(paths);
+            ScapegoatTree<Path, Ngram[]> files = readPaths(paths);
             stopwatch.finished("Reading all input files");
 
             // Build index of n-grams (not implemented yet)
-            BST<Ngram, ArrayList<Path>> index = buildIndex(files);
+            ScapegoatTree<Ngram, ArrayList<Path>> index = buildIndex(files);
             stopwatch.finished("Building n-gram index");
 
             // Compute similarity of all file pairs
-            BST<PathPair, Integer> similarity = findSimilarity(files, index);
+            ScapegoatTree<PathPair, Integer> similarity = findSimilarity(files, index);
             stopwatch.finished("Computing similarity scores");
 
             // Find most similar file pairs, arranged in
@@ -60,8 +60,8 @@ public class Lab3 {
     }
 
     // Phase 1: Read in each file and chop it into n-grams.
-    static BST<Path, Ngram[]> readPaths(Path[] paths) throws IOException {
-        BST<Path, Ngram[]> files = new BST<>();
+    static ScapegoatTree<Path, Ngram[]> readPaths(Path[] paths) throws IOException {
+        ScapegoatTree<Path, Ngram[]> files = new ScapegoatTree<>();
         for (Path path: paths) {
             String contents = new String(Files.readAllBytes(path));
             Ngram[] ngrams = Ngram.ngrams(contents, 5);
@@ -79,83 +79,79 @@ public class Lab3 {
     }
 
     // Phase 2: build index of n-grams (not implemented yet)
-    static BST<Ngram, ArrayList<Path>> buildIndex(BST<Path, Ngram[]> files) {                                // D * K * log N = N log N
-        BST<Ngram, ArrayList<Path>> index = new BST<>();
+    static ScapegoatTree<Ngram, ArrayList<Path>> buildIndex(ScapegoatTree<Path, Ngram[]> files) {                                // D * K * log N = N log N
+        ScapegoatTree<Ngram, ArrayList<Path>> index = new ScapegoatTree<>();
         // TO DO: build index of n-grams
+        //K*D*3logN --> O(N*logN)
 
-        while (files.keys().hasNext()){         //håller på tills den gått igenom hela files                    D
-            Path p = files.keys().next();       //tar ut en key
-            for(Ngram[] nGram: files.get(p)){   //loopar igenom alla values inom den key:n                      K
-                
-                ArrayList<Path> l = null;       // list to add path to
-                if (!index.contains(nGram)){    // if nGram is not already in index make a new list             log 1, log 2, .... log N
-                    l = new ArrayList<>();      
-
-                } else {                        // else get the existing list                                   log 1, log 2, .... log N
-                    l = index.get(nGram);
+        for(Path key : files.keys()){          //D
+            Ngram[] ngrams = files.get(key);   //1
+            for(Ngram nG: ngrams){             //K
+                ArrayList<Path> l = null;      //1
+                if (!index.contains(nG)){      //log N
+                    l = new ArrayList<>();     //1
+                } else {
+                    l = index.get(nG);          //log N
                 }
-                l.add(p);                       // add the new path to the list                                 1, 2, .... N
-                index.put(nGram, p);            // put the list of paths in the index under the nGram           log 1, log 2, .... log N
-
-                
+                l.add(key);                     //1
+                index.put(nG,l);                //log N
             }
-
         }
         return index;
     }
 
     // Phase 3: Count how many n-grams each pair of files has in common.
-    static BST<PathPair, Integer> findSimilarity(BST<Path, Ngram[]> files, BST<Ngram, ArrayList<Path>> index) {
+    static ScapegoatTree<PathPair, Integer> findSimilarity(ScapegoatTree<Path, Ngram[]> files, ScapegoatTree<Ngram, ArrayList<Path>> index) {
         // TO DO: use index to make this loop much more efficient
         // N.B. Path is Java's class for representing filenames
         // PathPair represents a pair of Paths (see PathPair.java)
-        // D*D*K*K*(4) = N^2*5 N smallset = 20,000 m = 200,000, h = 4,000,000 N^2 = 400,000,000 ; 40,000,000,000; 
-        BST<PathPair, Integer> similarity = new BST<>();                            //1?
-        /*
+        // D*D*K*K = N^2 smallset = 20,000 m = 200,000, h = 4,000,000 N^2 = 400,000,000 ; 40,000,000,000;
+        //D*D*N*2*logD^2*logN --> O(D^2*N*logD*logN) paths (array) mostly contains "few" elements
+        //most of the times the complexity will be O(Constant*N*logN) --> O(N*logN)
+        ScapegoatTree<PathPair, Integer> similarity = new ScapegoatTree<>();
+
+        for(Ngram key : index.keys()){                              //N
+            ArrayList<Path> paths = index.get(key);                 //logN
+            for(Path p1: paths){                                    //D
+                for(Path p2: paths){                                //D
+                        PathPair pair = new PathPair(p1, p2);       //1
+
+                        if (!similarity.contains(pair)){            //1
+                            similarity.put(pair, 0);            //log D*D
+                        }
+
+                        similarity.put(pair, similarity.get(pair)+1); //Log D*D
+                }
+            }
+        }
+
+/*
         for (Path path1: files.keys()) {                                            // D
             for (Path path2: files.keys()) {                                        // D
-                if (path1.equals(path2)) continue;                                  // 1?
+                if (path1.equals(path2)) continue;                                  // 1
                 for (Ngram ngram1: files.get(path1)) {                              // K
                     for (Ngram ngram2: files.get(path2)) {                          // K
-                        if (ngram1.equals(ngram2)) {                                // 1?
-                            PathPair pair = new PathPair(path1, path2);             // 1?
+                        if (ngram1.equals(ngram2)) {                                // 1
+                            PathPair pair = new PathPair(path1, path2);             // 1
 
-                            if (!similarity.contains(pair))                         // 1?
-                                similarity.put(pair, 0);                            // 1?
+                            if (!similarity.contains(pair))                         // log (small constant) = constant
+                                similarity.put(pair, 0);                            // also const
 
-                            similarity.put(pair, similarity.get(pair)+1);           // 1?
+                            similarity.put(pair, similarity.get(pair)+1);           // also const
                         }
                     }
                 }
             }
         }
-        */
 
-        Iterable it = index.keys();
-        while (it.hasNext()){
-            Ngram nG = it.next();
-            ArrayList<Path> l = index.get(nG);
-            if (l.size() > 1){
-                
-
-                for (int i = 1; i < l.size(); l++){
-                    PathPair pair = new PathPair(l.get(i-1), l.get(i));         
-
-                    if (!similarity.contains(pair)){                     
-                        similarity.put(pair, 0);                          
-                    }
-                    similarity.put(pair, similarity.get(pair)+1);          
-                }
-
-            }
-        }
+ */
 
         return similarity;
     }
 
     // Phase 4: find all pairs of files with more than 30 n-grams
     // in common, sorted in descending order of similarity.
-    static ArrayList<PathPair> findMostSimilar(BST<PathPair, Integer> similarity) {
+    static ArrayList<PathPair> findMostSimilar(ScapegoatTree<PathPair, Integer> similarity) {
         // Find all pairs of files with more than 100 n-grams in common.
         ArrayList<PathPair> mostSimilar = new ArrayList<>();
         for (PathPair pair: similarity.keys()) {

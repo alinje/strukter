@@ -4,10 +4,10 @@
 ** Lab 3: Plagiarism detection
 *******************************************************************************/
 
-Name of lab group: [...]
-Group member A:    [...]
-Group member B:    [...]
-Group member C:    [...]
+Name of lab group: [76]
+Group member A:    [Aline Eikeland]
+Group member B:    [Emil Lundquist]
+Group member C:    [Louise Tranborg]
 
 
 /******************************************************************************
@@ -19,6 +19,7 @@ Group member C:    [...]
 **    is a small constant - that is, there is not much plagiarised text.
 ******************************************************************************/
 
+This is our result running the program on medium file:
 Reading all input files took 0,21 seconds
 Building n-gram index took 0,00 seconds  
 Computing similarity scores took 465,22 seconds
@@ -38,70 +39,73 @@ Plagiarism report:
    58 similarity: documents\medium\Pippi Longstocking (1969 film).txt and documents\medium\Pippi Goes on Board (film).txt
    52 similarity: documents\medium\Picture book.txt and documents\medium\Children's literature.txt
 
-We got the complexity to:
-O(N^2): 
+We found that findSimilarity has many nested loops which is a bad sign for the complexity. In Lab3.java we have
+commented the complexity of each line. The first two loops takes D-time each ex. Our calculations ended up being:
+D*D*K*K+Constant --> O(N^2)
+We got the final complexity to: O(N^2)
 
 /******************************************************************************
 ** 2. How long did the program take on the 'small' and 'medium' directories?
 **    Is the ratio between the times what you would expect, given the complexity?
 **    Explain very briefly why.
 *******************************************************************************/
-
 The small took 2.6 sec to run and the medium took 465 sec. 
 
-D*D*K*K*(5) = N^2*5 N smallset = 20,000 m = 200,000, h = 4,000,000 N^2 = 400,000,000 ; 40,000,000,000; 16,000,000,000,000
+small (N = 20,000), medium (N = 200,000), big (N = 2,000,000), and huge (N = 4,000,000)
 
-This is how long a runtime of N took for the documents:
-2,61/400,000,000 =         6.52  e-9 s
-456,57 / 40,000,000,000 =  1.141 e-8 s
+Small:
+N^2 = 20 000^2 = 400 000 000
 
-40,000,000,000 * 6.52  e-9 s = 260.8 sec but we got 465...
-Expected result would be equal results. Now the medium file runs twice as slow as the calculated. 
-The time between the two sizes are a bit larger than expected, but we belive that can be beacuse the amount of 
-plagiarised text differ. Our analysis works where the plagiarised text is contant, which it is not, therefore the 
-nonexpected difference. 
+This is how long a runtime of N took for the small document:
+2,61/400,000,000 = 6.52  e-9 s
+
+Medium:
+N^2 = 200 000^2 = 40 000 000 000
+
+40,000,000,000 * 6.52  e-9 s = 260.8 sec is our calculated time for how long the medium is expected to take
+but we got 465 sec...
+
+The medium file runs twice as slow as we calculated.
+The time between the two sizes are a bit larger than expected, but we believe that can be because the amount of
+plagiarised text differ. Our analysis works where the plagiarised text is constant, which it is not, therefore the
+non-expected difference. Lots of other factors can also affect the result ofc.
 
 /******************************************************************************
 ** 3. How long do you predict the program would take to run on
 **    the 'huge' directory? Show your calculations.
 *******************************************************************************/
 
-2,61/400,000,000 =         6.52  e-9 s
-456,57 / 40,000,000,000 =  1.141 e-8 s
+This is how long a runtime of N took for the documents:
+small - 2,61/400,000,000 =         6.52  e-9 s
+medium - 456,57 / 40,000,000,000 =  1.141 e-8 s
+We calculate from medium.
 
-// 40 000 000 000 - 400 000 000 = 39600000000
-// x/ 1.141*e-8 - 6.52*e-9 = k
+Huge:
+N^2 = 4,000,000^2 = 16 000 000 000 000
 
-       400,000,000
-    40,000,000,000 2      = 100
-16,000,000,000,000 800    = 40 000
-
-osäker på k
-
-16,000,000,000,000 * k 
-16,000,000,000,000 * 1.141 * e-8 = 6124205734.988259 s = 1,701,160 Hours : 49 Minutes : 33 Seconds * 
-16,000,000,000,000 * 1.141 * e-8 = 6124205734.988259 s * 40 000?
-sammaish?
-
-
-Our calculations indicates that the huge directory would take N^2 * calculated s / n from medium size file. In (where N = 4 000 000). 
-
+16 000 000 000 000 * 1.141 e-8 s = 182560 sec, which is almost 51 hours :O
 
 /******************************************************************************
 ** Task: Using binary search trees
 **
 ** 4. Which of the trees usually become unbalanced?
 ******************************************************************************/
+Documents/small
+Balance statistics:
+  files: BST, size 7, height 6
 
-[...]
+Documents/medium
+Balance statistics:
+  files: BST, size 110, height 109
 
+Files has almost the same size and height! This means that the tree is heavily unbalanced!
+The files (small, medium..) are ordered! So in the tree files, we will add each element in order! So the
+tree is going to be really unbalanced!
 
 /******************************************************************************
 ** 5 (optional). Is there a simple way to stop these trees becoming unbalanced?
 ******************************************************************************/
-
-[...]
-
+We can randomize the files beforehand, so the possibility to add them in order are less likely.
 
 /******************************************************************************
 ** Task: Using scapegoat trees
@@ -110,9 +114,25 @@ Our calculations indicates that the huge directory would take N^2 * calculated s
 **    Again, assume a total of N 5-grams, and a constant number of 5-grams
 **    that occur in more than one file.
 ******************************************************************************/
+BuildIndex: K*D*3logN --> O(N*logN)
+Looping though all the keys takes K-time, Looping though the N-grams takes D-time.
+Adding to a scapegoatTree takes logN. So the final result was K*D*3logN which can
+be written as O(N*logN).
 
-[...]
+findSimilarity:
+D*D*N*2*logD^2*logN --> O(D^2*N*logD*logN)
+This is the worst case complexity of the method. D symbolizes the number of documents. But the array
+"paths" will mostly contain few elements, it will mostly be small.
+The most Ngrams will only have an array of length 1. These assumptions got we from the assumption
+that it's a constant number of 5-grams that occur in more than one file.
 
+Therefore can we write the complexity will mostly be O(Constant*N*logD*logN) -->
+O(Constant*N*Constant*logN) --> O(Constant*N*logN) --> O(N*logN)
+
+Our final calculated complexity for findSimilarity is therefore O(N*logN), because
+we could simplify it from it worst case complexity due to the assumption we could take.
+
+In Lab3.java we have commented the worst case complexity for each row in the method.
 
 /******************************************************************************
 ** 7 (optional). What if the total similarity score is an arbitrary number S,
@@ -128,17 +148,14 @@ Our calculations indicates that the huge directory would take N^2 * calculated s
 **
 ** A. Approximately how many hours did you spend on the assignment?
 ******************************************************************************/
-
-[..group member..]:  [..hours..]
-[..group member..]:  [..hours..]
-[..group member..]:  [..hours..]
-
+[Aline Eikeland] [6]
+[Emil Lundquist] [7]
+[Louise Tranborg] [9]
 
 /******************************************************************************
 ** B. Are there any known bugs / limitations?
 ******************************************************************************/
-
-[...]
+Not that we have noticed!
 
 
 /******************************************************************************
@@ -147,15 +164,13 @@ Our calculations indicates that the huge directory would take N^2 * calculated s
 **    Also include any resources (including the web) that you may
 **    may have used in creating your design.
 ******************************************************************************/
-
-[...]
+We asked for supervision for help.
 
 
 /******************************************************************************
 ** D. Describe any serious problems you encountered.                    
 ******************************************************************************/
-
-[...]
+We found it difficult to calculate the complexity some times.
 
 
 /******************************************************************************
@@ -163,6 +178,5 @@ Our calculations indicates that the huge directory would take N^2 * calculated s
 **    Feel free to provide any feedback on how much you learned 
 **    from doing the assignment, and whether you enjoyed it.                                             
 ******************************************************************************/
-
 [...]
 

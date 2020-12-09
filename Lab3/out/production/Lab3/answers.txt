@@ -1,0 +1,174 @@
+
+/******************************************************************************
+** DAT038, TDA417  Datastrukturer och algoritmer, LP2 2020
+** Lab 3: Plagiarism detection
+*******************************************************************************/
+
+Name of lab group: [76]
+Group member A:    [...]
+Group member B:    [...]
+Group member C:    [Louise Tranborg]
+
+
+/******************************************************************************
+** Task: Running the slow program
+**
+** 1. What is the complexity of findSimilarity?
+**    Answer in terms of N, the total number of 5-grams in the input files.
+**    Assume that the number of 5-grams that occur in more than one file
+**    is a small constant - that is, there is not much plagiarised text.
+******************************************************************************/
+
+Reading all input files took 0,21 seconds
+Building n-gram index took 0,00 seconds  
+Computing similarity scores took 465,22 seconds
+Finding the most similar files took 0,03 seconds
+In total the program took 465,47 seconds
+
+Balance statistics:
+  files: BST, size 110, height 109
+  index: BST, size 0, height -1
+  similarity: BST, size 874, height 873
+
+Plagiarism report:
+   80 similarity: documents\medium\Plagiarism.txt and documents\medium\Find me.txt
+   72 similarity: documents\medium\Pippi Longstocking (novel).txt and documents\medium\Pippi Longstocking (1969 TV series).txt
+   68 similarity: documents\medium\The Children of Noisy Village (film).txt and documents\medium\More About the Children of Noisy Village.txt        
+   67 similarity: documents\medium\Convention on the Rights of the Child.txt and documents\medium\Children's rights.txt
+   58 similarity: documents\medium\Pippi Longstocking (1969 film).txt and documents\medium\Pippi Goes on Board (film).txt
+   52 similarity: documents\medium\Picture book.txt and documents\medium\Children's literature.txt
+
+We got the complexity to:
+O(N^2): 
+
+/******************************************************************************
+** 2. How long did the program take on the 'small' and 'medium' directories?
+**    Is the ratio between the times what you would expect, given the complexity?
+**    Explain very briefly why.
+*******************************************************************************/
+
+The small took 2.6 sec to run and the medium took 465 sec. 
+
+D*D*K*K*(5) = N^2*5 N smallset = 20,000 m = 200,000, h = 4,000,000 N^2 = 400,000,000 ; 40,000,000,000; 16,000,000,000,000
+
+This is how long a runtime of N took for the documents:
+2,61/400,000,000 =         6.52  e-9 s
+456,57 / 40,000,000,000 =  1.141 e-8 s
+
+40,000,000,000 * 6.52  e-9 s = 260.8 sec but we got 465...
+Expected result would be equal results. Now the medium file runs twice as slow as the calculated. 
+The time between the two sizes are a bit larger than expected, but we believe that can be because the amount of
+plagiarised text differ. Our analysis works where the plagiarised text is constant, which it is not, therefore the
+nonexpected difference.
+(lots of factors that can effect result)
+
+/******************************************************************************
+** 3. How long do you predict the program would take to run on
+**    the 'huge' directory? Show your calculations.
+*******************************************************************************/
+
+2,61/400,000,000 =         6.52  e-9 s
+456,57 / 40,000,000,000 =  1.141 e-8 s
+
+// 40 000 000 000 - 400 000 000 = 39600000000
+// x/ 1.141*e-8 - 6.52*e-9 = k
+
+       400,000,000
+    40,000,000,000 2      = 100
+16,000,000,000,000 800    = 40 000
+
+
+16,000,000,000,000 * k 
+16,000,000,000,000 * 1.141 * e-8 = 6124205734.988259 s = 1,701,160 Hours : 49 Minutes : 33 Seconds * 
+16,000,000,000,000 * 1.141 * e-8 = 6124205734.988259 s * 40 000 = ?
+
+Our calculations indicates that the huge directory would take N^2 * calculated s / n from medium size file.
+In (where N = 4 000 000).
+
+/******************************************************************************
+** Task: Using binary search trees
+**
+** 4. Which of the trees usually become unbalanced?
+******************************************************************************/
+Documents/small
+Balance statistics:
+  files: BST, size 7, height 6
+
+Documents/medium
+Balance statistics:
+  files: BST, size 110, height 109
+
+The files (small, medium..) are ordered! So in the tree files, we will add each element in order! Så the
+tree is going to be really unbalanced!
+
+
+/******************************************************************************
+** 5 (optional). Is there a simple way to stop these trees becoming unbalanced?
+******************************************************************************/
+
+[...]
+
+
+/******************************************************************************
+** Task: Using scapegoat trees
+**
+** 6. Now what is the total complexity of buildIndex and findSimilarity?
+**    Again, assume a total of N 5-grams, and a constant number of 5-grams
+**    that occur in more than one file.
+******************************************************************************/
+
+[...]
+
+
+/******************************************************************************
+** 7 (optional). What if the total similarity score is an arbitrary number S,
+**               rather than a small constant?
+******************************************************************************/
+
+[...]
+
+
+
+/******************************************************************************
+** Appendix: General information
+**
+** A. Approximately how many hours did you spend on the assignment?
+******************************************************************************/
+
+[..group member..]:  [..hours..]
+[..group member..]:  [..hours..]
+[..group member..]:  [..hours..]
+
+
+/******************************************************************************
+** B. Are there any known bugs / limitations?
+******************************************************************************/
+
+[...]
+
+
+/******************************************************************************
+** C. Did you collaborate with any other students on this lab?
+**    If so, please write in what way you collaborated and with whom.
+**    Also include any resources (including the web) that you may
+**    may have used in creating your design.
+******************************************************************************/
+
+[...]
+
+
+/******************************************************************************
+** D. Describe any serious problems you encountered.                    
+******************************************************************************/
+
+[...]
+
+
+/******************************************************************************
+** E. List any other comments here.
+**    Feel free to provide any feedback on how much you learned 
+**    from doing the assignment, and whether you enjoyed it.                                             
+******************************************************************************/
+
+[...]
+

@@ -1,3 +1,4 @@
+import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ import java.util.ArrayList;
  *  @author You!
  */
 public class ScapegoatTree<Key extends Comparable<Key>, Value> {
-    final double alpha = 2;        // how unbalanced the tree may become;
+    final double alpha = 1;        // how unbalanced the tree may become;
                                    // alpha must be greater than 1,
                                    // height is always <= alpha * lg size.
 
@@ -127,18 +128,28 @@ public class ScapegoatTree<Key extends Comparable<Key>, Value> {
         if (node == null) return new Node(key, val);
         int cmp = key.compareTo(node.key);
 
-        // TO DO: finish implementing put.
+        // TODO: finish implementing put.
         // If you like you can start from the code for put in BST.java.
         // Read the lab instructions for more hints!
-        if (cmp < 0) {
-            // key is less than node.key
-        } else if (cmp > 0) {
-            // key is greater than node.key
-        } else {
-            // key is equal to node.key
+
+        if(cmp < 0) { // key is less than node.key
+            node.left  = put(node.left,  key, val);
+        }
+        else if (cmp > 0) { // key is greater than node.key
+            node.right = put(node.right, key, val);
+        }
+        else{ // key is equal to node.key
+            node.val   = val;
+        }
+        node.size = 1 + size(node.left) + size(node.right); //Set the size of the node
+
+        node.height = Math.max(height(node.left), height(node.right)) + 1; //will increase height if needed
+
+        if(height(node) > (alpha * log2(size(node)))){ //check if rebuild is needed
+            node = rebuild(node); //Update node
         }
 
-        throw new UnsupportedOperationException();
+        return node; //return the node
     }
 
     // Rebuild a tree to make it perfectly balanced.
@@ -155,9 +166,14 @@ public class ScapegoatTree<Key extends Comparable<Key>, Value> {
     // Perform an inorder traversal of the subtree rooted at 'node', storing
     // its nodes into the ArrayList 'nodes'.
     private void inorder(Node node, ArrayList<Node> nodes) {
-        // TO DO: use in-order traversal to store 'node' and all
+        // TODO: use in-order traversal to store 'node' and all
         // descendants into 'nodes' ArrayList
-        throw new UnsupportedOperationException();
+        if(node == null){ // If node is null we should return :)
+            return;
+        }
+        inorder(node.left, nodes); //Check the left node :)
+        nodes.add(node);           //Add the node to the Array
+        inorder(node.right, nodes);//Check the right node :)
     }
 
     // Given an array of nodes, and two indexes 'lo' and 'hi',
@@ -170,8 +186,7 @@ public class ScapegoatTree<Key extends Comparable<Key>, Value> {
         // Midpoint of subarray.
         int mid = (lo+hi)/2;
 
-        // TO DO: finish this method.
-        //
+        // TODO: finish this method.
         // The algorithm uses divide and conquer. Here is how it
         // should work.
         //
@@ -185,7 +200,17 @@ public class ScapegoatTree<Key extends Comparable<Key>, Value> {
         // (4) Correctly set the 'size' and 'height' fields for the
         //      node.
         // (5) Return the node!
-        throw new UnsupportedOperationException();
+        Node currentRoot = new Node(nodes.get(mid).key,nodes.get(mid).val); //Set currentNode with correct key and value from mid
+
+        Node leftSub = balanceNodes(nodes,lo,mid-1); //Everything left of mid
+        Node rightSub = balanceNodes(nodes, mid+1, hi); //Everything right of mig
+
+        currentRoot.left = leftSub; //connect left subtree
+        currentRoot.right = rightSub; //connect right subtree
+        currentRoot.height = 1 + Math.max(height(currentRoot.left), height(currentRoot.right)); //1 (the root) + the subtree with most levels is the height of the total tree
+        currentRoot.size = size(currentRoot.left) + size(currentRoot.right) + 1; //size of the total tree is the size of left subtree + size of right subtree + the root (1)
+
+        return currentRoot; //return the root!
     }
 
     // Returns log base 2 of a number.
