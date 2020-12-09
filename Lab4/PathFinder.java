@@ -92,26 +92,23 @@ public class PathFinder<Node> {
     public Result searchUCS(Node start, Node goal) {
         int iterations = 0;
         Queue<PQEntry> pqueue = new PriorityQueue<>(Comparator.comparingDouble((entry) -> entry.costToHere));
+        List<Node> visited = new ArrayList<>();
         pqueue.add(new PQEntry(start, 0, null));
         while (!pqueue.isEmpty()){
-            iterations ++;
+            iterations ++;                                        // hmmm...
             PQEntry entry = pqueue.remove();
             if (entry.node.equals(goal)){                        // if we find the goal node we return a new Result with the information about our path
-                LinkedList<Node> path = new LinkedList<>();
-                PQEntry current = entry;
-                while (current.backPointer != null){
-                    path.addFirst(current.node);
-                    current = current.backPointer;
-                }
-                path.addFirst(start);
+                List<Node> path = extractPath(entry);
                 return new Result(true, start, goal, entry.costToHere, path, iterations);
                 
             }
-            for(DirectedEdge<Node> edge : graph.outgoingEdges(entry.node)){
-                double costToNext = entry.costToHere + edge.weight();
-                               
-                pqueue.add(new PQEntry(edge.to(), costToNext, entry));
+            if (!visited.contains(entry.node)){
+                for(DirectedEdge<Node> edge : graph.outgoingEdges(entry.node)){
+                    double costToNext = entry.costToHere + edge.weight();              
+                    pqueue.add(new PQEntry(edge.to(), costToNext, entry));
+                }
             }
+            visited.add(entry.node); 
             if (iterations == 1000000) break;
         }
 
@@ -141,11 +138,12 @@ public class PathFinder<Node> {
      */
     private List<Node> extractPath(PQEntry entry) {
         LinkedList<Node> path = new LinkedList<>();
-        /******************************
-         * TODO: Task 1b              *
-         * Change below this comment  *
-         ******************************/
-        path.add(entry.node);
+        PQEntry current = entry;
+        while (current.backPointer != null){
+            path.addFirst(current.node);
+            current = current.backPointer;
+        }
+        path.addFirst(current.node);
         return path;
     }
 
