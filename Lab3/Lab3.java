@@ -82,19 +82,23 @@ public class Lab3 {
     static ScapegoatTree<Ngram, ArrayList<Path>> buildIndex(ScapegoatTree<Path, Ngram[]> files) {                                // D * K * log N = N log N
         ScapegoatTree<Ngram, ArrayList<Path>> index = new ScapegoatTree<>();
         // TO DO: build index of n-grams
-        //K*D*3logN --> O(N*logN)
 
-        for(Path key : files.keys()){          //D
-            Ngram[] ngrams = files.get(key);   //1
-            for(Ngram nG: ngrams){             //K
-                ArrayList<Path> l = null;      //1
-                if (!index.contains(nG)){      //log N
-                    l = new ArrayList<>();     //1
-                } else {
-                    l = index.get(nG);          //log N
+        Iterator it = files.keys().iterator();
+        while (it.hasNext()){         //håller på tills den gått igenom hela files                    D
+            Path p = (Path) it.next();       //tar ut en key
+            for(Ngram nGram : files.get(p)) { // loopar igenom alla values inom den key:n K
+                
+                ArrayList<Path> l = null;       // list to add path to
+                if (!index.contains(nGram)){    // if nGram is not already in index make a new list             log 1, log 2, .... log N
+                    l = new ArrayList<>();      
+
+                } else {                        // else get the existing list                                   log 1, log 2, .... log N
+                    l = index.get(nGram);
                 }
-                l.add(key);                     //1
-                index.put(nG,l);                //log N
+                l.add(p);                       // add the new path to the list                                 1, 2, .... N
+                index.put(nGram, l);            // put the list of paths in the index under the nGram           log 1, log 2, .... log N
+
+                
             }
         }
         return index;
@@ -143,8 +147,27 @@ public class Lab3 {
                 }
             }
         }
+        */
 
- */
+        /*
+        Iterator it = index.keys().iterator();
+        while (it.hasNext()){
+            Ngram nG = (Ngram)it.next();
+            ArrayList<Path> l = index.get(nG);
+            if (l.size() > 1){
+                
+
+                for (int i = 1; i < l.size(); i++){
+                    PathPair pair = new PathPair(l.get(i-1), l.get(i));         
+
+                    if (!similarity.contains(pair)){                     
+                        similarity.put(pair, 0);                          
+                    }
+                    similarity.put(pair, similarity.get(pair)+1);          
+                }
+
+
+        */
 
         return similarity;
     }
