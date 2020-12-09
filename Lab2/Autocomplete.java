@@ -6,7 +6,7 @@ public class Autocomplete {
 
     // Initializes the dictionary from the given array of terms.
     public Autocomplete(Term[] dictionary) {
-        this.dictionary = dictionary;
+        this.dictionary= dictionary;
         sortDictionary();
     }
 

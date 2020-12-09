@@ -1,0 +1,93 @@
+
+/******************************************************************************
+** DAT038, TDA417  Datastrukturer och algoritmer, LP2 2020
+** Lab 2: Autocomplete
+*******************************************************************************/
+
+Name of lab group: [76]
+Group member A:    [Emil Lundquist]
+Group member B:    [Aline Eikeland]
+Group member C:    [Louise Tranborg]
+
+
+/******************************************************************************
+** 1. Describe how your firstIndexOf() method in RangeBinarySearch.java
+**    finds the first index of a key that equals the search key.
+******************************************************************************/
+
+firstIndexOf initially performs a standard binary search. It looks at the middle element of the current span to check. 
+The input array must be sorted in order for the binary search to work.
+If the element is lower than the key, the lesser elements are excluded from the search span and v.v. for an element to big.
+
+If an element matching the key is found, the method proceeds to check whether the element directly left to the found one also is a match.
+It continues to check until an unmatching element is found. Then the method returns the index of the last matching element.
+
+lastIndexOf work similarly but it instead checks for continous matching to the right of the first found matching element.
+
+/******************************************************************************
+** 2. What is the worst case time complexity in the number of compares
+**    that each of the operations in the Autocomplete data type make,
+**    as a function of the number of terms n and the number of matching terms m?
+******************************************************************************/
+
+sortDictionary():  [N^2]
+We used Quicksort with median-of-three and insertion sort (on small arrays). 
+Quicksort is generally very fast with N log N complexity, but if you get very unlucky with the choosing
+of the pivot it can theoretically come up to a complexity of N^2. The average complexity however is N log N
+
+allMatches():  [log N + M^2]
+Binary search has the worst case complexity of log N. We use quicksort on the number of matching terms (M)
+which has a worst case of complexity of M^2 (if we get really unlucky). 
+We can't remove one of the terms since it differs depending on the search key whether log N or M^2 is bigger.
+
+
+numberOfMatches():  [log N]
+The only operation used by numberOfMatches is a binary search on the entire dictionary, 
+which has a worst case (and average case) complexity of log N.
+
+
+
+/******************************************************************************
+** Appendix: General information
+**
+** A. Approximately how many hours did you spend on the assignment?
+******************************************************************************/
+
+[Emil Lundquist]:  [6]
+[Aline Eikeland]:  [9]
+[Louise Tranborg]:  [6]
+
+/******************************************************************************
+** B. Are there any known bugs / limitations?
+******************************************************************************/
+
+No, not that we know of.
+
+
+/******************************************************************************
+** C. Did you collaborate with any other students on this lab?
+**    If so, please write in what way you collaborated and with whom.
+**    Also include any resources (including the web) that you may
+**    may have used in creating your design.
+******************************************************************************/
+
+No.
+
+
+/******************************************************************************
+** D. Describe any serious problems you encountered.                    
+******************************************************************************/
+
+Issues making the quicksort work (and not understanding that we were allowed to use the Arrays method). 
+The majority of the time were used to implement quicksort on our own, which was not a part of this lab, but 
+it helped us get a bigger understanding of the algorithm. No regrets :D 
+Issues understanding the comparators.
+
+/******************************************************************************
+** E. List any other comments here.
+**    Feel free to provide any feedback on how much you learned 
+**    from doing the assignment, and whether you enjoyed it.                                             
+******************************************************************************/
+Nice to have testing-material (cities.txt and more) close at hand, it makes is easier to understand what we have done and 
+it also makes it more entertaining to work with the material! 
+
