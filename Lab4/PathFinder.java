@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.Stack;
+import java.util.ArrayList;
 import java.util.Comparator;
 
 import java.util.stream.Collectors;
@@ -90,10 +92,29 @@ public class PathFinder<Node> {
     public Result searchUCS(Node start, Node goal) {
         int iterations = 0;
         Queue<PQEntry> pqueue = new PriorityQueue<>(Comparator.comparingDouble((entry) -> entry.costToHere));
-        /******************************
-         * TODO: Task 1a+c            *
-         * Change below this comment  *
-         ******************************/
+        pqueue.add(new PQEntry(start, 0, null));
+        while (!pqueue.isEmpty()){
+            iterations ++;
+            PQEntry entry = pqueue.remove();
+            if (entry.node.equals(goal)){                        // if we find the goal node we return a new Result with the information about our path
+                LinkedList<Node> path = new LinkedList<>();
+                PQEntry current = entry;
+                while (current.backPointer != null){
+                    path.addFirst(current.node);
+                    current = current.backPointer;
+                }
+                path.addFirst(start);
+                return new Result(true, start, goal, entry.costToHere, path, iterations);
+                
+            }
+            for(DirectedEdge<Node> edge : graph.outgoingEdges(entry.node)){
+                double costToNext = entry.costToHere + edge.weight();
+                               
+                pqueue.add(new PQEntry(edge.to(), costToNext, entry));
+            }
+            if (iterations == 1000000) break;
+        }
+
         return new Result(false, start, goal, -1, null, iterations);
     }
     
