@@ -1,13 +1,16 @@
 
 import java.util.List;
+import java.util.Map;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.Set;
 import java.util.Stack;
 import java.util.ArrayList;
 import java.util.Comparator;
-
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.function.Function;
 
@@ -92,7 +95,7 @@ public class PathFinder<Node> {
     public Result searchUCS(Node start, Node goal) {
         int iterations = 0;
         Queue<PQEntry> pqueue = new PriorityQueue<>(Comparator.comparingDouble((entry) -> entry.costToHere));
-        List<Node> visited = new ArrayList<>();
+        Set<Node> visited = new HashSet<>();
         pqueue.add(new PQEntry(start, 0, null));
         while (!pqueue.isEmpty()){
             iterations ++;                                        // hmmm...
@@ -117,33 +120,45 @@ public class PathFinder<Node> {
     
 
     /**
-     * Run the A* algorithm for finding the shortest path.
+     * Run the A* algorithm for finding the shortest path. TODO A bit faster than teacher example, why?
      * @param start  the start node
      * @param goal   the goal node
      */
     public Result searchAstar(Node start, Node goal) {
         int iterations = 0;
         Queue<PQEntry> pqueue = new PriorityQueue<>(Comparator.comparingDouble((entry) -> entry.costToHere));
-        List<Node> visited = new ArrayList<>();
+        Map<Node, Double> visited = new HashMap<>();
         pqueue.add(new PQEntry(start, 0, null));
         while (!pqueue.isEmpty()){
-            iterations ++;                                        // hmmm...
+            iterations ++;                                        
             PQEntry entry = pqueue.remove();
-            if (entry.node.equals(goal)){                        // if we find the goal node we return a new Result with the information about our path
+            if (entry.node.equals(goal)){                      
                 List<Node> path = extractPath(entry);
-                return new Result(true, start, goal, path.size(), path, iterations);
+                return new Result(true, start, goal, path.size()-1, path, iterations);
                 
             }
-            if (!visited.contains(entry.node)){
+            
+            if (!visited.containsKey(entry.node)){
                 for(DirectedEdge<Node> edge : graph.outgoingEdges(entry.node)){
-                    //TODO I mean I think this is where the magic happens
-                    double costToNext = entry.costToHere;
-                    double costToGoal = graph.guessCost(entry.node, goal);
+           
+                    double knownHere = extractPath(entry).size()-1;
+
+                    double newThere = knownHere + edge.weight();
+                    double knownThere;
+                    if (visited.containsKey(edge.to())){
+                        knownThere = visited.get(edge.to());
+                        if (newThere < knownThere){
+                            knownThere = newThere;
+                        }
+                    } else {
+                        knownThere = newThere;
+                    }
                     
-                    pqueue.add(new PQEntry(edge.to(), costToNext + costToGoal, entry));
+                    pqueue.add(new PQEntry(edge.to(), knownThere + graph.guessCost(edge.to(), goal), entry));
+                    visited.put(entry.node, knownHere); 
+
                 }
             }
-            visited.add(entry.node); 
             if (iterations == 1000000) break;
         }
 
