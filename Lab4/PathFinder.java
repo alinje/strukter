@@ -123,10 +123,30 @@ public class PathFinder<Node> {
      */
     public Result searchAstar(Node start, Node goal) {
         int iterations = 0;
-        /******************************
-         * TODO: Task 3               *
-         * Change below this comment  *
-         ******************************/
+        Queue<PQEntry> pqueue = new PriorityQueue<>(Comparator.comparingDouble((entry) -> entry.costToHere));
+        List<Node> visited = new ArrayList<>();
+        pqueue.add(new PQEntry(start, 0, null));
+        while (!pqueue.isEmpty()){
+            iterations ++;                                        // hmmm...
+            PQEntry entry = pqueue.remove();
+            if (entry.node.equals(goal)){                        // if we find the goal node we return a new Result with the information about our path
+                List<Node> path = extractPath(entry);
+                return new Result(true, start, goal, path.size(), path, iterations);
+                
+            }
+            if (!visited.contains(entry.node)){
+                for(DirectedEdge<Node> edge : graph.outgoingEdges(entry.node)){
+                    //TODO I mean I think this is where the magic happens
+                    double costToNext = entry.costToHere;
+                    double costToGoal = graph.guessCost(entry.node, goal);
+                    
+                    pqueue.add(new PQEntry(edge.to(), costToNext + costToGoal, entry));
+                }
+            }
+            visited.add(entry.node); 
+            if (iterations == 1000000) break;
+        }
+
         return new Result(false, start, goal, -1, null, iterations);
     }
 
