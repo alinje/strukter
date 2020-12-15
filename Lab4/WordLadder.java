@@ -1,9 +1,13 @@
 
 import java.util.List;
+import java.util.Map;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
-
+import java.util.Iterator;
 import java.util.stream.Collectors;
 
 import java.io.IOException;
@@ -22,6 +26,11 @@ import java.nio.file.Paths;
 public class WordLadder implements DirectedGraph<String> {
 
     private Set<String> dictionary;
+
+    private Map<String, List<DirectedEdge<String>>> ladderMap;
+
+
+
     private Set<Character> charset;
 
 
@@ -40,6 +49,8 @@ public class WordLadder implements DirectedGraph<String> {
      * @param file  path to a text file
      */
     public WordLadder(String file) throws IOException {
+        ladderMap = new HashMap<>();
+        
         dictionary = new HashSet<>();
         charset = new HashSet<>();
         Files.lines(Paths.get(file))
@@ -78,11 +89,32 @@ public class WordLadder implements DirectedGraph<String> {
      * @return a list of the graph edges that originate from {@code w}
      */
     public List<DirectedEdge<String>> outgoingEdges(String w) {
-        /******************************
-         * TODO: Task 2               *
-         * Change below this comment  *
-         ******************************/
-        return new LinkedList<>();
+
+        if (ladderMap.containsKey(w)){
+            return ladderMap.get(w);
+        }
+
+
+        List<DirectedEdge<String>> list = new LinkedList<>();
+        for (int i = 0; i < w.length(); i++) {
+            Iterator<Character> it = charset.iterator();
+            while (it.hasNext()) {
+
+                char[] word = w.toCharArray();
+                word[i] = it.next();
+                String compString = String.valueOf(word);
+                if (dictionary.contains(compString) && !compString.equals(w)){
+                    list.add(new DirectedEdge<String>(w, compString, guessCost(w, compString)));
+                }
+            }
+    
+        }
+        
+
+        ladderMap.put(w, list);
+
+        return list;
+        
     }
 
 
@@ -93,11 +125,30 @@ public class WordLadder implements DirectedGraph<String> {
      * (the number of differing character positions)
      */
     public double guessCost(String w, String u) {
-        /******************************
-         * TODO: Task 4               *
-         * Change below this comment  *
-         ******************************/
-        return 0;
+
+
+
+        int o = Math.min(w.length(), u.length());
+        int lengthDiff = Math.max(w.length(), u.length())-o;
+
+        double cost = lengthDiff;
+        for (int i = 0; i < o; i++) {
+            if (w.charAt(i) != u.charAt(i)){
+                cost += 1;
+            }
+        }
+        return cost;/*
+
+        int o = Math.min(w.length(), u.length());
+        int lengthDiff = Math.max(w.length(), u.length())-o;
+
+        double cost = lengthDiff;
+        for (int i = 0; i < o; i++) {
+            if (w.charAt(i) != u.charAt(i)){
+                cost += 1;
+            }
+        }
+        return cost;*/
     }
 
 
