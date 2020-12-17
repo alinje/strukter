@@ -94,19 +94,26 @@ public class PathFinder<Node> {
      */
     public Result searchUCS(Node start, Node goal) {
         int iterations = 0;
+        // a queue that prioritze the cheapest nodes
         Queue<PQEntry> pqueue = new PriorityQueue<>(Comparator.comparingDouble((entry) -> entry.costToHere));
+        // a set storing the nodes already visited
         Set<Node> visited = new HashSet<>();
+        // add the starting node to the queue
         pqueue.add(new PQEntry(start, 0, null));
+        // loop until we found our way or the queue is empty
         while (!pqueue.isEmpty()){
-            iterations ++;                                        // hmmm...
+            iterations ++;
+            // check if next queue entry represents the goal, if so return the result                                        
             PQEntry entry = pqueue.remove();
-            if (entry.node.equals(goal)){                        // if we find the goal node we return a new Result with the information about our path
+            if (entry.node.equals(goal)){                        
                 List<Node> path = extractPath(entry);
                 return new Result(true, start, goal, entry.costToHere, path, iterations);
                 
             }
+            // if we are first time visitors to the node, we add the nodes edging to this as entries in our queue
             if (!visited.contains(entry.node)){
                 for(DirectedEdge<Node> edge : graph.outgoingEdges(entry.node)){
+                    // the costToHere for the edging node is the cost to the current + the edge weight
                     double costToNext = entry.costToHere + edge.weight();              
                     pqueue.add(new PQEntry(edge.to(), costToNext, entry));
                 }
@@ -114,10 +121,9 @@ public class PathFinder<Node> {
             visited.add(entry.node); 
             if (iterations == 1000000) break;
         }
-
+        // if the loop ends, there's no way from start to goal
         return new Result(false, start, goal, -1, null, iterations);
     }
-    
 
     /**
      * Run the A* algorithm for finding the shortest path. TODO A bit faster than teacher example, why?
@@ -127,6 +133,7 @@ public class PathFinder<Node> {
     public Result searchAstar(Node start, Node goal) {
         int iterations = 0;
         Queue<PQEntry> pqueue = new PriorityQueue<>(Comparator.comparingDouble((entry) -> entry.costToHere));
+        // here visited also stores a Double with a guessed distance to goal
         Map<Node, Double> visited = new HashMap<>();
         pqueue.add(new PQEntry(start, 0, null));
         while (!pqueue.isEmpty()){
@@ -140,10 +147,13 @@ public class PathFinder<Node> {
             
             if (!visited.containsKey(entry.node)){
                 for(DirectedEdge<Node> edge : graph.outgoingEdges(entry.node)){
-           
-                    double knownHere = extractPath(entry).size()-1;
-
+                    // this is where a* search differ from ucs search
+                    // TODO knownHere is the accurate cost from start to entry node
+                    double knownHere = entry.costToHere - graph.guessCost(start, entry.node);
+                    // newThere is an accurate cost from start to edging node
                     double newThere = knownHere + edge.weight();
+                    // below we check if we have previously stored a distance from start to edging node
+                    // and if so compare newThere to this stored distance
                     double knownThere;
                     if (visited.containsKey(edge.to())){
                         knownThere = visited.get(edge.to());
@@ -153,7 +163,8 @@ public class PathFinder<Node> {
                     } else {
                         knownThere = newThere;
                     }
-                    
+                    // we add the edging node to the queue with the distance of the shortest distance from start node to edging node
+                    // + the guess of the distance edging node -> goal
                     pqueue.add(new PQEntry(edge.to(), knownThere + graph.guessCost(edge.to(), goal), entry));
                     visited.put(entry.node, knownHere); 
 
