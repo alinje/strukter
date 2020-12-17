@@ -140,11 +140,10 @@ public class GridGraph implements DirectedGraph<GridGraph.Coord> {
      * (the Euclidean distance between the coordinates)
      */
     public double guessCost(Coord p, Coord q) {
-        /******************************
-         * TODO: Task 4               *
-         * Change below this comment  *
-         ******************************/
-        return 0;
+
+        double xDif = p.x - q.x;
+        double yDif = p.y - q.y;
+        return Math.sqrt(xDif*xDif + yDif*yDif);
     }
 
 
