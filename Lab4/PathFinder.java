@@ -132,6 +132,7 @@ public class PathFinder<Node> {
      */
     public Result searchAstar(Node start, Node goal) {
         int iterations = 0;
+        // below costToHere is actually used for storing estimated cost start to goal
         Queue<PQEntry> pqueue = new PriorityQueue<>(Comparator.comparingDouble((entry) -> entry.costToHere));
         // accurate records of best costs
         Map<Node, Double> knownCosts = new HashMap<>();
@@ -156,21 +157,10 @@ public class PathFinder<Node> {
                 // newThere is an accurate cost from start to edging node
                 double newThere = knownHere + edge.weight();
 
-                // if this new accurate path is not shorter than the old one, don't store it!
-                /*if (knownCosts.containsKey(edge.to())){
-                    if (newThere >= knownCosts.get(edge.to())){
-                        break;
-                    }
-                }*/
-
                 if (!knownCosts.containsKey(edge.to())
                 || newThere < knownCosts.get(edge.to())){
 
                     knownCosts.put(edge.to(), newThere);
-
-                    //guessedCosts.put(edge.to(), newThere + graph.guessCost(edge.to(), goal));
-
-
 
                     // we add the edging node to the queue with the distance of the shortest distance from start node to edging node
                     // + the guess of the distance edging node -> goal
@@ -210,8 +200,6 @@ public class PathFinder<Node> {
         public final Node node;
         public final double costToHere;
         public final PQEntry backPointer;
-
-        public final double estimatedCostToGoal;
 
         PQEntry(Node n, double c, PQEntry bp) {
             node = n;
