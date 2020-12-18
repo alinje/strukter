@@ -4,7 +4,7 @@
 ** Lab 4: Path finder
 *******************************************************************************/
 
-Name of lab group: [...]
+Name of lab group: [76]
 Group member A:    [...]
 Group member B:    [...]
 Group member C:    [...]

@@ -90,30 +90,28 @@ public class WordLadder implements DirectedGraph<String> {
      */
     public List<DirectedEdge<String>> outgoingEdges(String w) {
 
-        if (ladderMap.containsKey(w)){
-            return ladderMap.get(w);
+        if (ladderMap.containsKey(w)){ //If laddermap already has a list of the graph edges that originate from w
+            return ladderMap.get(w); //we can just return the list directly
         }
 
+        List<DirectedEdge<String>> list = new LinkedList<>(); //We create list to add to and later return
+        for (int i = 0; i < w.length(); i++) { //We loop through the length of the word
+            Iterator<Character> it = charset.iterator(); //We create an iterator it with charset
+            while (it.hasNext()) { //We loop through "it"
 
-        List<DirectedEdge<String>> list = new LinkedList<>();
-        for (int i = 0; i < w.length(); i++) {
-            Iterator<Character> it = charset.iterator();
-            while (it.hasNext()) {
-
-                char[] word = w.toCharArray();
-                word[i] = it.next();
-                String compString = String.valueOf(word);
-                if (dictionary.contains(compString) && !compString.equals(w)){
-                    list.add(new DirectedEdge<String>(w, compString, guessCost(w, compString)));
+                char[] word = w.toCharArray(); //convert w to char
+                word[i] = it.next(); //change the letter in the word that we are on to the "it" we are on
+                String compString = String.valueOf(word); //convert it back to string
+                if (dictionary.contains(compString) && !compString.equals(w)){ //If the new word is a "real" word (is in the dictionary) and is not the word itself
+                    list.add(new DirectedEdge<String>(w, compString, guessCost(w, compString))); //we add the word to our list
                 }
             }
     
         }
-        
 
-        ladderMap.put(w, list);
+        ladderMap.put(w, list); //we put the result in the ladderMap
 
-        return list;
+        return list; //return the list
         
     }
 
@@ -126,18 +124,17 @@ public class WordLadder implements DirectedGraph<String> {
      */
     public double guessCost(String w, String u) {
 
+        int o = Math.min(w.length(), u.length()); //we set o to the value of the word with minimal length
+        int lengthDiff = Math.max(w.length(), u.length())-o; //maximal length - minimal length = length differ
 
-
-        int o = Math.min(w.length(), u.length());
-        int lengthDiff = Math.max(w.length(), u.length())-o;
-
-        double cost = lengthDiff;
-        for (int i = 0; i < o; i++) {
-            if (w.charAt(i) != u.charAt(i)){
-                cost += 1;
+        double cost = lengthDiff; //we set cost to the length differ
+        for (int i = 0; i < o; i++) { //loop minimal length
+            if (w.charAt(i) != u.charAt(i)){ //if a letter does not match
+                cost += 1; //we increase cost
             }
         }
-        return cost;/*
+        return cost; //we return the cost
+        /*
 
         int o = Math.min(w.length(), u.length());
         int lengthDiff = Math.max(w.length(), u.length())-o;
