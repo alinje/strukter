@@ -133,6 +133,7 @@ public class PathFinder<Node> {
     public Result searchAstar(Node start, Node goal) {
         int iterations = 0;
         Queue<PQEntry> pqueue = new PriorityQueue<>(Comparator.comparingDouble((entry) -> entry.costToHere));
+        // accurate records of best costs
         Map<Node, Double> knownCosts = new HashMap<>();
         //Map<Node, Double> guessedCosts = new HashMap<>();
         
@@ -209,10 +210,8 @@ public class PathFinder<Node> {
         public final Node node;
         public final double costToHere;
         public final PQEntry backPointer;
-        /******************************
-         * TODO: Task 3               *
-         * Change below this comment  *
-         ******************************/
+
+        public final double estimatedCostToGoal;
 
         PQEntry(Node n, double c, PQEntry bp) {
             node = n;

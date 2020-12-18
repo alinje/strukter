@@ -5,9 +5,9 @@
 *******************************************************************************/
 
 Name of lab group: [76]
-Group member A:    [...]
-Group member B:    [...]
-Group member C:    [...]
+Group member A:    Aline Eikeland
+Group member B:    Louise Tranborg 
+Group member C:    Emil Lundqvist
 
 
 /******************************************************************************
@@ -17,48 +17,49 @@ Group member C:    [...]
 
 > java RunPathFinder ucs AdjacencyGraph graphs/AdjacencyGraph/citygraph-SE.txt Lund Kiruna
 
-loop iterations: [...]
-minimal cost:    [...]
-shortest path:   [...]
+loop iterations: [5427]
+minimal cost:    [1826.0]
+shortest path:   [32]
 
 > java RunPathFinder ucs NPuzzle 3 "/HFG/BED/C_A/" "/ABC/DEF/GH_/"
 
-loop iterations: [...]
-minimal cost:    [...]
-shortest path:   [...]
+loop iterations: [483573]
+minimal cost:    [31.0]
+shortest path:   [32]
 
 > java RunPathFinder astar NPuzzle 3 "/HFG/BED/C_A/" "/ABC/DEF/GH_/"
 
-loop iterations: [...]
-minimal cost:    [...]
+loop iterations: [21301]
+minimal cost:    [31.0]
 
 > java RunPathFinder ucs NPuzzle 3 "/HGF/BED/C_A/" "/ABC/DEF/GH_/"
 
-loop iterations: [...]
-minimal cost:    [...]
-shortest path:   [...]
+No path found from /HGF/BED/C_A/ to /ABC/DEF/GH_/
+loop iterations: [483841]
+minimal cost:    [-]
+shortest path:   [-]
 
 > java RunPathFinder ucs GridGraph graphs/GridGraph/AR0011SR.map "23:161" "130:211"
 
-loop iterations: [...]
-minimal cost:    [...]
-shortest path:   [...]
+loop iterations: [159327]
+minimal cost:    [366.40411229460744]
+shortest path:   [309]
 
 > java RunPathFinder astar GridGraph graphs/GridGraph/AR0011SR.map "23:161" "130:211"
 
-loop iterations: [...]
-minimal cost:    [...]
+loop iterations: [19774]
+minimal cost:    [366.40411229460744]
 
 > java RunPathFinder ucs WordLadder graphs/WordLadder/words-saldo.txt syster broder
 
-loop iterations: [...]
-minimal cost:    [...]
-shortest path:   [...]
+loop iterations: [71182]
+minimal cost:    [11.0]
+shortest path:   [12]
 
 > java RunPathFinder astar WordLadder graphs/WordLadder/words-saldo.txt syster broder
 
-loop iterations: [...]
-minimal cost:    [...]
+loop iterations: [1743]
+minimal cost:    [11]
 
 
 /******************************************************************************
@@ -68,11 +69,11 @@ minimal cost:    [...]
 **    Try a number of different examples per class.
 ******************************************************************************/
 
-GridGraph:  [...]
+GridGraph:  [UCS iterates about 10 times as many times as A*]
 
-WordLadder: [...]
+WordLadder: [UCS to A* variates largely on WordLadders, in our test the optimization ranges from 4.4 to 254 times as fast.]
 
-NPuzzle:    [...]
+NPuzzle:    [UCS iterates about 20-100 times as many times as A*]
 
 
 /******************************************************************************
@@ -81,23 +82,54 @@ NPuzzle:    [...]
 **    Why do you think this is the case?
 ******************************************************************************/
 
-[...]
+guessCost does not do well with detours. For gridgraph, where it consistently performs worse than for the other types of graphs, 
+it will explore every point in a dead end before it backs out and try the longer way around.
 
+In WordLadder, the amount of detours depends on how many "tricky" nodes that come along the way. 
+If a popular node is part of the way it will try every path through the most similar words before it tries the correct detour.
+
+e.g. WordLadder performs well for "eller" to "glada". The path does not have as expensive dead ends as other words since "eller"
+is an unusual letter structure. And for UCS, the amount of words that differ four letters from "eller" is staggering.
 
 /******************************************************************************
 ** 4. Give pseudo-code of the following methods that you implemented
 ******************************************************************************/
 
 WordLadder.outgoingEdges(String w):
-    [...]
+        if laddermap already has a list of the graph edges that originate from w
+            return the list directly
+        
 
+        List for edges
+        for i length of the word 
+            while through charset iterator
+
+                word[i] = current letter
+
+                if the new word is in the dictionary and is not the input word
+                    add it to the list
+                }
+            }
+    
+        }
+
+        update laddermap
+
+        return list
 
 WordLadder.guessCost(String w, String u):
-    [...]
 
+        cost = length difference of w and u
+        for the shortest word´s length
+            if a letter does not match
+                increase cost
+
+        return cost
 
 GridGraph.guessCost(Coord p, Coord q):
-    [...]
+        return pythagoras theorem hypotenuse of katets p and q
+
+
 
 
 /******************************************************************************
@@ -105,7 +137,33 @@ GridGraph.guessCost(Coord p, Coord q):
 ******************************************************************************/
 
 PathFinder.searchAstar(Node start, Node goal):
-    [...]
+        new int for storing iterations
+
+        new queue prioritized by estimated cost start to goal
+        new map with exact costs from start to key node
+        
+        add values for start node to queue and map
+
+        while queue is not empty
+            increase iterations
+            remove first node in queue
+
+            if the element matches the goal node
+                return the result
+                
+            for all edges from the removed node
+
+
+                if exact cost calc. through removed node is shorter than the stored cost
+                or if cost is not yet mapped
+
+
+                    put the new cost in the map
+
+                    add the node to the queue with an estimated cost from the map + guess of the way from this node to the goal
+
+
+        if no path found, return the disappointing result
 
 
 /******************************************************************************
@@ -113,8 +171,8 @@ PathFinder.searchAstar(Node start, Node goal):
 **    of .searchAstar() and .searchUCS()?
 ******************************************************************************/
 
-[...]
-
+The use of an estimated cost start to goal in the queue instead of the known already passed path.
+The UCS search does not accept visiting a node twice, A* search does if a better path is found.
 
 
 /******************************************************************************
@@ -123,16 +181,16 @@ PathFinder.searchAstar(Node start, Node goal):
 ** A. Approximately how many hours did you spend on the assignment?
 ******************************************************************************/
 
-[..group member..]:  [..hours..]
-[..group member..]:  [..hours..]
-[..group member..]:  [..hours..]
+Aline 10
+Louise 8
+Emil   8
 
 
 /******************************************************************************
 ** B. Are there any known bugs / limitations?
 ******************************************************************************/
 
-[...]
+No
 
 
 /******************************************************************************
@@ -142,14 +200,14 @@ PathFinder.searchAstar(Node start, Node goal):
 **    may have used in creating your design.
 ******************************************************************************/
 
-[...]
+No
 
 
 /******************************************************************************
 ** D. Describe any serious problems you encountered.                    
 ******************************************************************************/
 
-[...]
+
 
 
 /******************************************************************************
@@ -158,5 +216,5 @@ PathFinder.searchAstar(Node start, Node goal):
 **    from doing the assignment, and whether you enjoyed it.                                             
 ******************************************************************************/
 
-[...]
+
 
