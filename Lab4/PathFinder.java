@@ -134,8 +134,8 @@ public class PathFinder<Node> {
         int iterations = 0;
         Queue<PQEntry> pqueue = new PriorityQueue<>(Comparator.comparingDouble((entry) -> entry.costToHere));
         Map<Node, Double> knownCosts = new HashMap<>();
-        Map<Node, Double> guessedCosts = new HashMap<>();
-
+        //Map<Node, Double> guessedCosts = new HashMap<>();
+        
         pqueue.add(new PQEntry(start, Double.MAX_VALUE, null));
         knownCosts.put(start, 0.0);
 
@@ -144,10 +144,10 @@ public class PathFinder<Node> {
             PQEntry entry = pqueue.remove();
             if (entry.node.equals(goal)){
                 List<Node> path = extractPath(entry);
-                return new Result(true, start, goal, path.size()-1, path, iterations);
-
+                return new Result(true, start, goal, knownCosts.get(entry.node), path, iterations);
+                
             }
-
+            
             for(DirectedEdge<Node> edge : graph.outgoingEdges(entry.node)){
                 // this is where a* search differ from ucs search
                 // TODO knownHere is the accurate cost from start to entry node
@@ -163,11 +163,11 @@ public class PathFinder<Node> {
                 }*/
 
                 if (!knownCosts.containsKey(edge.to())
-                        || newThere < knownCosts.get(edge.to())){
+                || newThere < knownCosts.get(edge.to())){
 
                     knownCosts.put(edge.to(), newThere);
 
-                    guessedCosts.put(edge.to(), newThere + graph.guessCost(edge.to(), goal));
+                    //guessedCosts.put(edge.to(), newThere + graph.guessCost(edge.to(), goal));
 
 
 
