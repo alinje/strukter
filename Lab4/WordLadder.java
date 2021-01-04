@@ -90,10 +90,6 @@ public class WordLadder implements DirectedGraph<String> {
      */
     public List<DirectedEdge<String>> outgoingEdges(String w) {
 
-        if (ladderMap.containsKey(w)){ //If laddermap already has a list of the graph edges that originate from w
-            return ladderMap.get(w); //we can just return the list directly
-        }
-
         List<DirectedEdge<String>> list = new LinkedList<>(); //We create list to add to and later return
         for (int i = 0; i < w.length(); i++) { //We loop through the length of the word
             Iterator<Character> it = charset.iterator(); //We create an iterator it with charset
@@ -108,8 +104,6 @@ public class WordLadder implements DirectedGraph<String> {
             }
     
         }
-
-        ladderMap.put(w, list); //we put the result in the ladderMap
 
         return list; //return the list
         
